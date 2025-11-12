@@ -57,7 +57,6 @@ Esses dados simulam as condições ambientais monitoradas por sensores em campo 
 ## 🧱 Estrutura da Tabela `SENSORES`
 
 ### 📄 Criação da Tabela
-![Criação da tabela SENSORES](Imagens/CREATE%20TABLE%20SENSORES.png)
 
 ```sql
 CREATE TABLE SENSORES (
@@ -71,9 +70,9 @@ CREATE TABLE SENSORES (
   MENSAGEM       VARCHAR2(77 CHAR)
 );
 ````
+![Criação da tabela SENSORES](Imagens/CREATE%20TABLE%20SENSORES.png)
 
 ### 🔧 Ajustes de Precisão e Escala
-![Ajustes de precisão de colunas](Imagens/ALTER%20TABLE%20SENSORES.png)
 
 ```sql
 ALTER TABLE SENSORES MODIFY (PH             NUMBER(4,2));
@@ -84,7 +83,7 @@ ALTER TABLE SENSORES MODIFY (N NUMBER(10,0));
 ALTER TABLE SENSORES MODIFY (P NUMBER(10,0));
 ALTER TABLE SENSORES MODIFY (K NUMBER(10,0));
 ```
-
+![Ajustes de precisão de colunas](Imagens/ALTER%20TABLE%20SENSORES.png)
 ---
 
 ## 🧠 Dificuldades e Soluções
