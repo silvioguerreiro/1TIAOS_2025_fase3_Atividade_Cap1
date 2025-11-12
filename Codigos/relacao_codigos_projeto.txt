@@ -1,0 +1,147 @@
+RELACAO DE CODIGOS E EXPLICACOES - PROJETO FARM TECH (FASE 3 – 1TIAOS – CAP 1)
+
+Aluno: Silvio Prestes Guerreiro Junior (RM567958)
+Contexto: Importacao, estruturação e analise de dados de sensores (pH, ajuste_pH, umidade, temperatura, NPK) no Oracle Database/SQL Developer, com dados gerados no VS Code (simulador Wokwi, Fase 2 – Cap. 1).
+
+======================================================================
+1) CONFIGURACAO DE SESSAO (NLS) – EVITAR PERDA DE CASAS DECIMAIS
+----------------------------------------------------------------------
+Finalidade: garantir que o separador decimal seja ponto (.) durante a importacao e execucao de scripts.
+
+SQL:
+ALTER SESSION SET NLS_NUMERIC_CHARACTERS = '.,';
+
+Observacao: sem esta configuracao, valores como 4.63 podem ser interpretados como 463, gerando distorcao e erros de precisao (ORA-01438).
+
+======================================================================
+2) DDL – CRIACAO DA TABELA DE DESTINO
+----------------------------------------------------------------------
+Finalidade: criar a tabela SENSORES com tipos de dados alinhados ao dominio real das variaveis.
+
+SQL:
+CREATE TABLE SENSORES (
+  N              NUMBER(1),
+  P              NUMBER(1),
+  K              NUMBER(1),
+  PH             NUMBER(3,2)     NOT NULL,
+  AJUSTE_PH      NUMBER(3,2),
+  UMIDADE_       NUMBER(3,1),
+  TEMPERATURA_C  NUMBER(3,1),
+  MENSAGEM       VARCHAR2(77 CHAR)
+);
+
+Racional:
+- N, P, K como inteiros pequenos (leituras categorizadas ou contagens);
+- PH e AJUSTE_PH com duas casas decimais (0.00 a 14.00);
+- UMIDADE_ e TEMPERATURA_C com uma casa (ou mais, conforme necessidade);
+- MENSAGEM como texto explicativo/diagnostico operacional.
+
+======================================================================
+3) DDL – AJUSTES DE PRECISAO/ESCALA APOS TESTES
+----------------------------------------------------------------------
+Finalidade: ampliar precisao para evitar ORA-01438 em determinados registros.
+
+SQL:
+ALTER TABLE SENSORES MODIFY (PH             NUMBER(4,2));
+ALTER TABLE SENSORES MODIFY (AJUSTE_PH      NUMBER(4,2));
+ALTER TABLE SENSORES MODIFY (UMIDADE_       NUMBER(5,2));
+ALTER TABLE SENSORES MODIFY (TEMPERATURA_C  NUMBER(5,2));
+ALTER TABLE SENSORES MODIFY (N NUMBER(10,0));
+ALTER TABLE SENSORES MODIFY (P NUMBER(10,0));
+ALTER TABLE SENSORES MODIFY (K NUMBER(10,0));
+
+Racional:
+- NUMBER(4,2) permite valores ate 99.99 (suficiente para pH/ajuste);
+- NUMBER(5,2) amplia margem para umidade/temperatura;
+- NUMBER(10,0) garante folga para inteiros.
+
+======================================================================
+4) IMPORTACAO DE DADOS (ASSISTENTE DO SQL DEVELOPER)
+----------------------------------------------------------------------
+Passos-chave (sem codigo):
+- Escolher a planilha Excel (Sensores_limpo.xlsx);
+- Usar “Insert into existing table” mapeando cada coluna para a tabela SENSORES;
+- Conferir a previa (valores com ponto decimal);
+- Executar a carga e revisar logs.
+
+Erros tipicos e como evitar:
+- ORA-00957 (coluna duplicada): certifique-se de que o mapeamento nao cria colunas repetidas (PH foi o caso tipico);
+- ORA-01438 (valor > precisao): aumente NUMBER(p,s) conforme item 3 e confirme NLS da sessao (item 1).
+
+======================================================================
+5) CONSULTAS SQL – VALIDACAO E ANALISE
+----------------------------------------------------------------------
+5.1) Amostra de registros (sanidade da carga)
+SQL:
+SELECT * FROM SENSORES FETCH FIRST 20 ROWS ONLY;
+
+5.2) Leituras com pH fora da faixa ideal (5.5–6.8)
+SQL:
+SELECT N, P, K, PH, AJUSTE_PH, MENSAGEM
+FROM SENSORES
+WHERE PH < 5.5 OR PH > 6.8;
+
+Uso: identificar necessidade de ajuste de pH e acoes de manejo.
+
+5.3) Situacoes de emergencia (>=40°C e umidade < 55%)
+SQL:
+SELECT N, P, K, PH, UMIDADE_, TEMPERATURA_C, MENSAGEM
+FROM SENSORES
+WHERE TEMPERATURA_C >= 40 AND UMIDADE_ < 55;
+
+Uso: identificar risco termico e deficit hidrico simultaneos.
+
+5.4) Medias gerais (indicadores sinteticos)
+SQL:
+SELECT
+  ROUND(AVG(PH),2) AS PH_MEDIO,
+  ROUND(AVG(UMIDADE_),2) AS UMIDADEMEDIA,
+  ROUND(AVG(TEMPERATURA_C),2) AS TEMP_MEDIA
+FROM SENSORES;
+
+Uso: estatisticas para relatorios e comparacoes entre periodos.
+
+5.5) Diagnostico automatizado (classificacao por regras)
+SQL:
+SELECT
+  N, P, K, PH, AJUSTE_PH, UMIDADE_, TEMPERATURA_C,
+  CASE
+    WHEN TEMPERATURA_C >= 40 AND UMIDADE_ < 55 THEN 'EMERGENCIA: calor extremo (>=40°C e umidade <55%)'
+    WHEN PH < 5.5 OR PH > 6.8 THEN 'ALERTA: pH fora da faixa ideal (5.5–6.8)'
+    ELSE 'CONDICAO NORMAL'
+  END AS DIAGNOSTICO
+FROM SENSORES;
+
+Uso: padroniza a leitura operacional, facilitando relatorios e alarmes.
+
+======================================================================
+6) BOAS PRATICAS ADOTADAS
+----------------------------------------------------------------------
+- Definir explicitamente NUMBER(p,s) para evitar truncamento;
+- Ajustar NLS_NUMERIC_CHARACTERS na sessao antes da importacao;
+- Testar com amostra (FETCH FIRST …) antes de consultas elaboradas;
+- Manter mensagens operacionais em MENSAGEM para rastreabilidade;
+- Registrar erros/ajustes (ex.: PH duplicado, ORA-01438) no README.
+
+======================================================================
+7) TRATAMENTO DE ERROS ORA COMUNS
+----------------------------------------------------------------------
+ORA-00957 – nome de coluna duplicado:
+- Causa: mapeamento/geracao duplicada de PH no assistente;
+- Solucao: criar a tabela manualmente e revisar mapeamento.
+
+ORA-01438 – valor maior que a precisao especificada:
+- Causa: NUMBER(p,s) insuficiente ou NLS incorreto;
+- Solucao: aumentar p/s nas colunas afetadas e aplicar
+  ALTER SESSION SET NLS_NUMERIC_CHARACTERS = '.,';
+
+======================================================================
+8) RESUMO OPERACIONAL
+----------------------------------------------------------------------
+- Dados gerados no VS Code (simulador Wokwi – ESP32, DHT22, sensor de pH e rele);
+- Exportados para Excel (Sensores_limpo.xlsx);
+- Carregados no Oracle (SQL Developer) na tabela SENSORES;
+- Validados com consultas de sanidade, diagnostico e medias;
+- Documentacao consolidada em README e neste TXT.
+
+FIM
