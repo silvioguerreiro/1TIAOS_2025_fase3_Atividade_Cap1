@@ -138,6 +138,8 @@ SELECT N, P, K, PH, AJUSTE_PH, MENSAGEM
 FROM SENSORES
 WHERE PH < 5.5 OR PH > 6.8;
 ```
+![Consulta Médias Gerais](Imagens/Consulta-Medias%20Gerais.jpg)
+
 
 ### 3️⃣ Situações de emergência (≥40°C e umidade <55%)
 
@@ -146,6 +148,7 @@ SELECT N, P, K, PH, UMIDADE, TEMPERATURA_C, MENSAGEM
 FROM SENSORES
 WHERE TEMPERATURA_C >= 40 AND UMIDADE < 55;
 ```
+![Consulta Situação de Emergência](Imagens/Consulta-Situa%C3%A7%C3%B5es%20de%20emerg%C3%AAncia.jpg)
 
 ### 4️⃣ Médias gerais
 
@@ -156,6 +159,7 @@ SELECT
   ROUND(AVG(TEMPERATURA_C),2) AS TEMP_MEDIA
 FROM SENSORES;
 ```
+![Consulta Médias Gerais](Imagens/Consulta-Medias%20Gerais.jpg)
 
 ### 5️⃣ Diagnóstico automatizado
 
@@ -169,6 +173,7 @@ SELECT
   END AS DIAGNOSTICO
 FROM SENSORES;
 ```
+![Consulta Diagnóstico Automatizado](Imagens/Consulta-Diagn%C3%B3stico%20Automatizado.jpg)
 
 ---
 
