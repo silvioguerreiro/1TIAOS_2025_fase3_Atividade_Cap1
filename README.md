@@ -26,9 +26,12 @@ As informações utilizadas neste projeto foram **copiadas diretamente do termin
 
 Após a simulação e coleta, os dados foram:
 1. Copiados do **terminal do VS Code** durante a execução da simulação;  
+
+   ![Extração de dados dos sensores no Wokwi](Imagens/Extração%20de%20dados%20dos%20sensores%20no%20Wokwi.jpg)
+
 2. Salvos em uma **planilha Excel (`Sensores_limpo.xlsx`)**;  
 3. Importados e tratados no **Oracle SQL Developer**, conforme solicitado na atividade prática.
-
+   
 Exemplo de leituras registradas no terminal:
 
 ```
@@ -53,7 +56,9 @@ Esses dados simulam as condições ambientais monitoradas por sensores em campo 
 
 ## 🧱 Estrutura da Tabela `SENSORES`
 
-### 📄 Criação da tabela
+### 📄 Criação da Tabela
+![Criação da tabela SENSORES](Imagens/CREATE%20TABLE%20SENSORES.png)
+
 ```sql
 CREATE TABLE SENSORES (
   N              NUMBER(1),
@@ -68,6 +73,7 @@ CREATE TABLE SENSORES (
 ````
 
 ### 🔧 Ajustes de Precisão e Escala
+![Ajustes de precisão de colunas](Imagens/ALTER%20TABLE%20SENSORES.png)
 
 ```sql
 ALTER TABLE SENSORES MODIFY (PH             NUMBER(4,2));
@@ -99,12 +105,15 @@ ALTER TABLE SENSORES MODIFY (K NUMBER(10,0));
    ```sql
    ALTER SESSION SET NLS_NUMERIC_CHARACTERS = '.,';
    ```
-2. **Criação da tabela com tipos ajustados.**
-3. **Importação da planilha Excel:**
-
+   ![ALTER SESSION NLS_NUMERIC_CHARACTERS](Imagens/ALTER%20SESSION%20SET%20NLS_NUMERIC_CHARACTERS.png)
+   
+3. **Criação da tabela com tipos ajustados.**
+   
+4. **Importação da planilha Excel:**
+![Importação dos dados no Oracle Database](Imagens/Importação.png)
    * Método: *Insert into existing table*
    * Verificação dos tipos e escala numérica.
-4. **Validação pós-importação:**
+5. **Validação pós-importação:**
 
    ```sql
    SELECT * FROM SENSORES FETCH FIRST 10 ROWS ONLY;
@@ -119,6 +128,8 @@ ALTER TABLE SENSORES MODIFY (K NUMBER(10,0));
 ```sql
 SELECT * FROM SENSORES FETCH FIRST 20 ROWS ONLY;
 ```
+![Consulta Médias Gerais](Imagens/Consulta-Medias%20Gerais.jpg)
+
 
 ### 2️⃣ Leituras com pH fora da faixa ideal (5,5–6,8)
 
