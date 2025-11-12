@@ -242,6 +242,12 @@ Os dados simulados no **VS Code** e gerados pelo **simulador Wokwi (Fase 2 – F
 
 ---
 
+## Link Video
+
+https://youtu.be/ZV3UsOPT4Vw
+
+---
+
 ## 📋 Licença
 
 Projeto desenvolvido para fins **acadêmicos** – **FIAP**.
