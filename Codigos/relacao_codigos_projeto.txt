@@ -85,9 +85,9 @@ Uso: identificar necessidade de ajuste de pH e acoes de manejo.
 
 5.3) Situacoes de emergencia (>=40°C e umidade < 55%)
 SQL:
-SELECT N, P, K, PH, UMIDADE_, TEMPERATURA_C, MENSAGEM
+SELECT N, P, K, PH, UMIDADE, TEMPERATURA_C, MENSAGEM
 FROM SENSORES
-WHERE TEMPERATURA_C >= 40 AND UMIDADE_ < 55;
+WHERE TEMPERATURA_C >= 40 AND UMIDADE < 55;
 
 Uso: identificar risco termico e deficit hidrico simultaneos.
 
@@ -95,7 +95,7 @@ Uso: identificar risco termico e deficit hidrico simultaneos.
 SQL:
 SELECT
   ROUND(AVG(PH),2) AS PH_MEDIO,
-  ROUND(AVG(UMIDADE_),2) AS UMIDADEMEDIA,
+  ROUND(AVG(UMIDADE),2) AS UMIDADEMEDIA,
   ROUND(AVG(TEMPERATURA_C),2) AS TEMP_MEDIA
 FROM SENSORES;
 
@@ -104,9 +104,9 @@ Uso: estatisticas para relatorios e comparacoes entre periodos.
 5.5) Diagnostico automatizado (classificacao por regras)
 SQL:
 SELECT
-  N, P, K, PH, AJUSTE_PH, UMIDADE_, TEMPERATURA_C,
+  N, P, K, PH, AJUSTE_PH, UMIDADE, TEMPERATURA_C,
   CASE
-    WHEN TEMPERATURA_C >= 40 AND UMIDADE_ < 55 THEN 'EMERGENCIA: calor extremo (>=40°C e umidade <55%)'
+    WHEN TEMPERATURA_C >= 40 AND UMIDADE < 55 THEN 'EMERGENCIA: calor extremo (>=40°C e umidade <55%)'
     WHEN PH < 5.5 OR PH > 6.8 THEN 'ALERTA: pH fora da faixa ideal (5.5–6.8)'
     ELSE 'CONDICAO NORMAL'
   END AS DIAGNOSTICO
